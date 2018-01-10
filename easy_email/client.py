@@ -40,7 +40,7 @@ class Message(object):
         """
         :return MIMEMultipart: prepared message ready to send by smtplib.SMTP client.
         """
-        return self.body
+        return self.body.as_string()
 
     def set_message(self):
         """
@@ -110,7 +110,7 @@ class EasyEmail(object):
         self.message = Message(sender, receivers, subject, message, message_type, attachments)
 
     def send(self):
-        return self.client.send_mail(self.receivers, self.message)
+        return self.client.send_mail(self.receivers, self.message.get_message())
 
 
 class Client(smtplib.SMTP):
@@ -123,7 +123,7 @@ class Client(smtplib.SMTP):
 
     def send_mail(self, receivers, message):
         self.sendmail(self.email, receivers, message)
-        self.close()
+        self.quit()
 
 
 class Gmail(object):
