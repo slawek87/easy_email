@@ -1,6 +1,8 @@
 import smtplib
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from os.path import basename
 
 
 class Message(object):
@@ -32,7 +34,7 @@ class Message(object):
 
         self.set_message()
 
-        self.attachments = Attachment(attachments)
+        self.attachment = Attachment(attachments)
 
         self.set_attachments()
 
@@ -44,7 +46,7 @@ class Message(object):
 
     def set_message(self):
         """
-        Validates message type and set message for given type.
+        Validates message type and setup message for given type.
         """
         message_types = {
             self.MESSAGE_TEXT: self.set_text_message(),
@@ -64,7 +66,8 @@ class Message(object):
         self.body['To'] = self.receivers
 
     def set_attachments(self):
-        pass
+        for attachment in self.attachment.get_attachments():
+            self.body.attach(attachment)
 
     def set_text_message(self):
         self.body.attach(MIMEText(self.message, 'plain'))
@@ -80,14 +83,27 @@ class Message(object):
 
 
 class Attachment(object):
+    """
+    Attachment opens files and setup them to attachment content type.
+
+    :param list attachments: List of path files.
+    """
     def __init__(self, attachments=None):
         self.attachments = attachments
 
-    def open(self, attachment):
-        pass
+    def get_attachments(self):
+        """
+        :return list: Method returns list of files with setup attachment's content type.
+        """
+        attachments = []
 
-    def prepare(self, attachments):
-        pass
+        for seed in self.attachments:
+            with open(seed, "rb") as opened_attachment:
+                attachment = MIMEApplication(opened_attachment.read(), Name=basename(seed))
+                attachment['Content-Disposition'] = 'attachment; filename="%s"' % basename(seed)
+                attachments.append(attachment)
+
+        return attachments
 
 
 #TODO create metaclass where we can check if client instance is smtlib.SMTP client instance.
