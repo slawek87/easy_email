@@ -1,0 +1,2 @@
+class Gmail(object):
+    pass
