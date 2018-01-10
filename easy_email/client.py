@@ -1,5 +1,6 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 class Message(object):
@@ -66,10 +67,10 @@ class Message(object):
         pass
 
     def set_text_message(self):
-        pass
+        self.body.attach(MIMEText(self.message, 'plain'))
 
     def set_html_message(self):
-        pass
+        self.body.attach(MIMEText(self.message, 'html'))
 
     def is_html_message(self):
         return self.message_type == self.MESSAGE_HTML
