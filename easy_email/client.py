@@ -42,13 +42,16 @@ class Message(object):
         return self.body
 
     def set_message(self):
+        """
+        Validates message type and set message for given type.
+        """
         message_types = {
             self.MESSAGE_TEXT: self.set_text_message(),
             self.MESSAGE_HTML: self.set_html_message()
         }
 
-        if message_types.get(self.message_type, False):
-            raise ValueError("")
+        if message_types.get(self.message_type, False) is False:
+            raise ValueError("Given message_type value is not correct.")
 
     def set_subject(self):
         self.body['Subject'] = self.subject
