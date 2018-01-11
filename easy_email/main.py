@@ -5,7 +5,6 @@ from email.mime.text import MIMEText
 from os.path import basename
 
 from easy_email.clients.interface import Client
-from easy_email.clients.gmail import Gmail
 
 
 class Message(object):
