@@ -4,6 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from os.path import basename
 
+from easy_email.clients.default import Client
+
 
 class Message(object):
     """
@@ -97,6 +99,9 @@ class Attachment(object):
         """
         attachments = []
 
+        if not self.attachments:
+            return attachments
+
         for seed in self.attachments:
             with open(seed, "rb") as opened_attachment:
                 attachment = MIMEApplication(opened_attachment.read(), Name=basename(seed))
@@ -106,7 +111,6 @@ class Attachment(object):
         return attachments
 
 
-#TODO create metaclass where we can check if client instance is smtlib.SMTP client instance.
 class EasyEmail(object):
     """
     EasyEmail handles send emails process.
@@ -120,6 +124,18 @@ class EasyEmail(object):
     :param list attachments: List of path files.
     """
     def __init__(self, client, sender, receivers, subject, message, message_type=Message.MESSAGE_HTML, attachments=None):
+        if not isinstance(client, Client):
+            raise TypeError("client instance has incorrect type.")
+
+        if not isinstance(receivers, list):
+            raise TypeError("receivers has incorrect type.")
+
+        if message_type not in [Message.MESSAGE_HTML, Message.MESSAGE_TEXT]:
+            raise TypeError("message_type has incorrect type.")
+
+        if attachments and not isinstance(attachments, list):
+            raise TypeError("attachments has incorrect type.")
+
         self.client = client
         self.sender = sender
         self.receivers = receivers
@@ -127,3 +143,9 @@ class EasyEmail(object):
 
     def send(self):
         return self.client.send_mail(self.receivers, self.message.get_message())
+
+
+if __name__ == '__main__':
+    client = Client('slawek@redsoftware.pl', 'test', 'test')
+    client = type("test")
+    easy_email = EasyEmail(client, 'slawek@redsoftware.pl', ['test@test.pl'], 'testing subject', 'testing message')
