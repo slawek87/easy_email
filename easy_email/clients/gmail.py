@@ -10,8 +10,6 @@ class Gmail(Client):
     SMTP_HOST = 'smtp.gmail.com'
     SMTP_PORT = 587
 
-    EMPTY_VALUES = ['', None]
-
     def __init__(self, username, password, email, host=SMTP_HOST, port=SMTP_PORT, local_hostname=None,
                  timeout=socket._GLOBAL_DEFAULT_TIMEOUT, source_address=None):
         super().__init__(username, password, email, host, port, local_hostname, timeout, source_address)
