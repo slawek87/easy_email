@@ -4,7 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from os.path import basename
 
-from easy_email.clients.default import Client
+from easy_email.clients.interface import Client
+from easy_email.clients.gmail import Gmail
 
 
 class Message(object):
@@ -65,7 +66,10 @@ class Message(object):
         self.body['Fom'] = self.sender
 
     def set_receivers(self):
-        self.body['To'] = self.receivers
+        """
+        :return string: separated receivers by `,`.
+        """
+        self.body['To'] = ','.join(self.receivers)
 
     def set_attachments(self):
         for attachment in self.attachment.get_attachments():
@@ -123,7 +127,8 @@ class EasyEmail(object):
     :param const message_type: There is two types of mail messages: `Message.MESSAGE_HTML` and `Message.MESSAGE_TEXT`.
     :param list attachments: List of path files.
     """
-    def __init__(self, client, sender, receivers, subject, message, message_type=Message.MESSAGE_HTML, attachments=None):
+    def __init__(self, client, sender, receivers, subject, message,
+                 message_type=Message.MESSAGE_HTML, attachments=None):
         if not isinstance(client, Client):
             raise TypeError("client instance has incorrect type.")
 
@@ -144,8 +149,3 @@ class EasyEmail(object):
     def send(self):
         return self.client.send_mail(self.receivers, self.message.get_message())
 
-
-if __name__ == '__main__':
-    client = Client('slawek@redsoftware.pl', 'test', 'test')
-    client = type("test")
-    easy_email = EasyEmail(client, 'slawek@redsoftware.pl', ['test@test.pl'], 'testing subject', 'testing message')
